@@ -17,6 +17,7 @@ interface ConversionProgressProps {
   convertedFiles: ConvertedFile[];
   onDownload: (file: ConvertedFile) => void;
   onDownloadAll: () => void;
+  delayMessage?: string;
 }
 
 export const ConversionProgress: React.FC<ConversionProgressProps> = ({
@@ -24,7 +25,8 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
   progress,
   convertedFiles,
   onDownload,
-  onDownloadAll
+  onDownloadAll,
+  delayMessage
 }) => {
   if (!isConverting && convertedFiles.length === 0) {
     return null;
@@ -37,8 +39,12 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
       {isConverting && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Converting files...</span>
-            <span className="text-sm text-muted-foreground">{progress}%</span>
+            <span className="text-sm font-medium">
+              {delayMessage || 'Converting files...'}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {delayMessage ? 'Please wait...' : `${progress}%`}
+            </span>
           </div>
           <Progress value={progress} className="w-full" />
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { ConversionSettings } from '@/components/ConversionSettings';
 import { ConversionProgress } from '@/components/ConversionProgress';
+import AdBanner from '@/components/AdBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import heic2any from 'heic2any';
@@ -21,6 +22,7 @@ const Index = () => {
   const [isConverting, setIsConverting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
+  const [delayMessage, setDelayMessage] = useState('');
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFiles(prev => [...prev, ...files]);
@@ -41,6 +43,20 @@ const Index = () => {
     setProgress(0);
     setConvertedFiles([]);
     
+    // 10-second delay with staged messages
+    const delayStages = [
+      { message: 'Preparing conversion...', duration: 2000 },
+      { message: 'Analyzing HEIC files...', duration: 3000 },
+      { message: 'Optimizing output quality...', duration: 3000 },
+      { message: 'Finalizing conversion setup...', duration: 2000 }
+    ];
+
+    for (const stage of delayStages) {
+      setDelayMessage(stage.message);
+      await new Promise(resolve => setTimeout(resolve, stage.duration));
+    }
+    
+    setDelayMessage('Converting files...');
     const converted: ConvertedFile[] = [];
 
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -78,6 +94,7 @@ const Index = () => {
 
     setConvertedFiles(converted);
     setIsConverting(false);
+    setDelayMessage('');
     toast.success('Conversion completed!');
   };
 
@@ -123,6 +140,9 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Top Ad Banner */}
+      <AdBanner adSlot="1234567890" className="bg-card/50 rounded-lg" />
+
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
         {/* File Upload */}
@@ -162,6 +182,7 @@ const Index = () => {
           convertedFiles={convertedFiles}
           onDownload={handleDownload}
           onDownloadAll={handleDownloadAll}
+          delayMessage={delayMessage}
         />
 
         {/* Info Section */}
@@ -188,6 +209,9 @@ const Index = () => {
             </div>
           </div>
         </div>
+        
+        {/* Bottom Ad Banner */}
+        <AdBanner adSlot="0987654321" adFormat="horizontal" className="bg-card/50 rounded-lg" />
       </div>
     </div>
   );
