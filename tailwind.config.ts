@@ -26,7 +26,13 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
+				},
+				upload: {
+					border: 'hsl(var(--upload-border))',
+					hover: 'hsl(var(--upload-hover))',
+					active: 'hsl(var(--upload-active))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
