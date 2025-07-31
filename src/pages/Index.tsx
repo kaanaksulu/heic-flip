@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { ConversionSettings } from '@/components/ConversionSettings';
 import { ConversionProgress } from '@/components/ConversionProgress';
+import FeatureSection from '@/components/FeatureSection';
+import FAQ from '@/components/FAQ';
+import Footer from '@/components/Footer';
 import AdBanner from '@/components/AdBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import heic2any from 'heic2any';
-import heroImage from '@/assets/hero-bg.jpg';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { validateFiles } from '@/utils/fileValidation';
 
 interface ConvertedFile {
   originalName: string;
@@ -17,14 +21,20 @@ interface ConvertedFile {
 
 const Index = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [outputFormat, setOutputFormat] = useState<'jpeg' | 'png'>('jpeg');
-  const [quality, setQuality] = useState(85);
+  const [outputFormat, setOutputFormat] = useLocalStorage<'jpeg' | 'png'>('outputFormat', 'jpeg');
+  const [quality, setQuality] = useLocalStorage<number>('quality', 85);
   const [isConverting, setIsConverting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
   const [delayMessage, setDelayMessage] = useState('');
 
   const handleFilesSelected = (files: File[]) => {
+    const validation = validateFiles(files);
+    if (!validation.isValid) {
+      toast.error(validation.error);
+      return;
+    }
+
     setSelectedFiles(prev => [...prev, ...files]);
     toast.success(`${files.length} file(s) added for conversion`);
   };
@@ -36,6 +46,12 @@ const Index = () => {
   const convertFiles = async () => {
     if (selectedFiles.length === 0) {
       toast.error('Please select files to convert');
+      return;
+    }
+
+    const validation = validateFiles(selectedFiles);
+    if (!validation.isValid) {
+      toast.error(validation.error);
       return;
     }
 
@@ -119,14 +135,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow text-primary-foreground">
-        <div 
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-glow/20" />
         <div className="relative max-w-4xl mx-auto px-6 py-16 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             HEIC to JPG/PNG Converter
@@ -186,33 +195,20 @@ const Index = () => {
         />
 
         {/* Info Section */}
-        <div className="bg-card rounded-lg p-6 text-center">
-          <h3 className="text-lg font-semibold mb-4">Why Convert HEIC Files?</h3>
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div>
-              <h4 className="font-medium mb-2">Universal Compatibility</h4>
-              <p className="text-muted-foreground">
-                JPG and PNG work on all devices and platforms, while HEIC is primarily supported on Apple devices.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Web Sharing</h4>
-              <p className="text-muted-foreground">
-                Most websites and social media platforms don't support HEIC format for uploads.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Privacy First</h4>
-              <p className="text-muted-foreground">
-                All conversion happens in your browser. Your files never leave your device.
-              </p>
-            </div>
-          </div>
-        </div>
-        
         {/* Bottom Ad Banner */}
         <AdBanner adSlot="0987654321" adFormat="horizontal" className="bg-card/50 rounded-lg" />
       </div>
+
+      {/* Feature Section */}
+      <FeatureSection />
+
+      {/* FAQ Section */}
+      <div id="faq">
+        <FAQ />
+      </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

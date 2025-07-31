@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileImage, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { formatFileSize } from '@/utils/fileValidation';
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
@@ -88,7 +89,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 <div>
                   <p className="font-medium">{file.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                    {formatFileSize(file.size)}
                   </p>
                 </div>
               </div>

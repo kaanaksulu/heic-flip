@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Download, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { formatFileSize } from '@/utils/fileValidation';
 
 interface ConvertedFile {
   originalName: string;
@@ -77,7 +78,7 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
                       <p className="text-sm text-destructive">{file.error}</p>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        {(file.convertedBlob.size / 1024 / 1024).toFixed(2)} MB
+                        {formatFileSize(file.convertedBlob.size)}
                       </p>
                     )}
                   </div>
