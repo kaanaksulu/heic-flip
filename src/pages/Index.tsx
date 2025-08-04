@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '@/components/Layout';
 import { FileUpload } from '@/components/FileUpload';
 import { ConversionSettings } from '@/components/ConversionSettings';
 import { ConversionProgress } from '@/components/ConversionProgress';
@@ -132,7 +133,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+    <Layout>
+      <div className="bg-gradient-to-br from-background to-secondary">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-glow text-primary-foreground">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary-glow/20" />
@@ -204,12 +206,13 @@ const Index = () => {
 
       {/* FAQ Section */}
       <div id="faq">
-        <FAQ />
+        <FAQ 
+          title="Frequently Asked Questions"
+          subtitle="Everything you need to know about HEIC conversion"
+        />
       </div>
-
-      {/* Footer */}
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

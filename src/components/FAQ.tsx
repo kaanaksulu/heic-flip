@@ -6,8 +6,21 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-const FAQ = () => {
-  const faqs = [
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface FAQProps {
+  title?: string;
+  subtitle?: string;
+  faqs?: FAQItem[];
+}
+
+const FAQ: React.FC<FAQProps> = ({ 
+  title = "Frequently Asked Questions",
+  subtitle = "Everything you need to know about HEIC conversion",
+  faqs = [
     {
       question: 'What is HEIC format and why do I need to convert it?',
       answer: 'HEIC (High Efficiency Image Container) is Apple\'s modern image format that provides better compression than JPEG while maintaining quality. However, it\'s not widely supported outside of Apple devices, making conversion necessary for sharing and web use.',
@@ -32,17 +45,18 @@ const FAQ = () => {
       question: 'Does this work on mobile devices?',
       answer: 'Yes! Our converter is fully responsive and works on all modern browsers including mobile Safari, Chrome, and Firefox on both iOS and Android devices.',
     },
-  ];
+  ]
+}) => {
 
   return (
     <section className="py-16 bg-background">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Frequently Asked Questions
+            {title}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Everything you need to know about HEIC conversion
+            {subtitle}
           </p>
         </div>
         

@@ -9,28 +9,41 @@ interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
   selectedFiles: File[];
   onRemoveFile: (index: number) => void;
+  acceptedTypes?: Record<string, string[]>;
+  title?: string;
+  description?: string;
+  supportText?: string;
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({ 
   onFilesSelected, 
   selectedFiles, 
-  onRemoveFile 
+  onRemoveFile,
+  acceptedTypes = {
+    'image/heic': ['.heic'],
+    'image/heif': ['.heif']
+  },
+  title = 'Upload HEIC Files',
+  description = 'Drag & drop your HEIC files here, or click to browse',
+  supportText = 'Supports .heic and .heif formats'
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const heicFiles = acceptedFiles.filter(file => 
-      file.type === 'image/heic' || 
-      file.type === 'image/heif' ||
-      file.name.toLowerCase().endsWith('.heic') ||
-      file.name.toLowerCase().endsWith('.heif')
+    const validFiles = acceptedFiles.filter(file => {
+      const validTypes = Object.keys(acceptedTypes);
+      const validExtensions = Object.values(acceptedTypes).flat();
+      
+      return validTypes.includes(file.type) || 
+             validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    }
     );
     
-    if (heicFiles.length !== acceptedFiles.length) {
-      // Show error for non-HEIC files
+    if (validFiles.length !== acceptedFiles.length) {
+      // Show error for invalid files
     }
     
-    onFilesSelected(heicFiles);
+    onFilesSelected(validFiles);
     setIsDragOver(false);
   }, [onFilesSelected]);
 
@@ -39,8 +52,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     onDragEnter: () => setIsDragOver(true),
     onDragLeave: () => setIsDragOver(false),
     accept: {
-      'image/heic': ['.heic'],
-      'image/heif': ['.heif']
+      ...acceptedTypes
     },
     multiple: true
   });
@@ -67,13 +79,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">
-              {isDragActive ? 'Drop your HEIC files here' : 'Upload HEIC Files'}
+              {isDragActive ? `Drop your files here` : title}
             </h3>
             <p className="text-muted-foreground">
-              Drag & drop your HEIC files here, or click to browse
+              {description}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Supports .heic and .heif formats
+              {supportText}
             </p>
           </div>
         </div>
