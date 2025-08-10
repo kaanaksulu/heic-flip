@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+import Layout from '@/components/Layout';
 import { FileUpload } from '@/components/FileUpload';
 import { ConversionSettings } from '@/components/ConversionSettings';
 import { ConversionProgress } from '@/components/ConversionProgress';
+import FeatureSection from '@/components/FeatureSection';
+import FAQ from '@/components/FAQ';
+import Footer from '@/components/Footer';
+import AdBanner from '@/components/AdBanner';
 import FeatureSection from '@/components/FeatureSection';
 import FAQ from '@/components/FAQ';
 import AdBanner from '@/components/AdBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { validateFiles } from '@/utils/fileValidation';
 
 interface ConvertedFile {
   originalName: string;
@@ -83,41 +87,18 @@ const JpgPngConverter = () => {
     for (let i = 0; i < selectedFiles.length; i++) {
       const file = selectedFiles[i];
       try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
+        const convertedBlob = await convertImageFile(file, outputFormat, quality);
+        const downloadUrl = URL.createObjectURL(convertedBlob);
+        const extension = outputFormat === 'jpeg' ? 'jpg' : 'png';
+        const originalName = file.name.replace(/\.(jpg|jpeg|png)$/i, `.${extension}`);
 
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = URL.createObjectURL(file);
+        converted.push({
+          originalName,
+          convertedBlob,
+          downloadUrl,
         });
 
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
-
-        const mimeType = outputFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
-        const qualityValue = outputFormat === 'jpeg' ? quality / 100 : 1;
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const downloadUrl = URL.createObjectURL(blob);
-            const extension = outputFormat === 'jpeg' ? 'jpg' : 'png';
-            const originalName = file.name.replace(/\.(jpg|jpeg|png)$/i, `.${extension}`);
-
-            converted.push({
-              originalName,
-              convertedBlob: blob,
-              downloadUrl,
-            });
-
-            toast.success(`Converted ${file.name}`);
-          }
-        }, mimeType, qualityValue);
-
-        // Clean up
-        URL.revokeObjectURL(img.src);
+        toast.success(`Converted ${file.name}`);
       } catch (error) {
         console.error('Conversion error:', error);
         converted.push({
@@ -129,6 +110,7 @@ const JpgPngConverter = () => {
         toast.error(`Failed to convert ${file.name}`);
       }
 
+
       setProgress(Math.round(((i + 1) / selectedFiles.length) * 100));
     }
 
@@ -138,6 +120,40 @@ const JpgPngConverter = () => {
     toast.success('Conversion completed!');
   };
 
+  const convertImageFile = (file: File, format: 'jpeg' | 'png', quality: number): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const qualityValue = format === 'jpeg' ? quality / 100 : 1;
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to convert image'));
+          }
+        }, mimeType, qualityValue);
+
+        // Clean up
+        URL.revokeObjectURL(img.src);
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        reject(new Error('Failed to load image'));
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
   const handleDownload = (file: ConvertedFile) => {
     const link = document.createElement('a');
     link.href = file.downloadUrl;
@@ -156,7 +172,8 @@ const JpgPngConverter = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+    <Layout>
+      <div className="bg-gradient-to-br from-background to-secondary">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20" />
@@ -232,6 +249,7 @@ const JpgPngConverter = () => {
       {/* Feature Section */}
       <FeatureSection 
         title="Why Use Our JPG/PNG Converter?"
+        subtitle="Professional-grade conversion with privacy and speed at the forefront"
         features={[
           {
             icon: 'Shield',
@@ -240,23 +258,23 @@ const JpgPngConverter = () => {
           },
           {
             icon: 'Zap',
-            title: 'High Quality',
-            description: 'Maintain image quality while converting between formats.',
+            title: 'Lightning Fast',
+            description: 'Convert multiple JPG and PNG files simultaneously with optimized processing.',
           },
           {
             icon: 'Globe',
-            title: 'Format Flexibility',
-            description: 'Convert JPG to PNG for transparency or PNG to JPG for smaller files.',
+            title: 'Universal Compatibility',
+            description: 'Convert between JPG and PNG formats that work everywhere.',
           },
           {
             icon: 'Download',
             title: 'Batch Processing',
-            description: 'Convert multiple images at once and download them all together.',
+            description: 'Download all converted files at once or individually.',
           },
           {
             icon: 'Smartphone',
-            title: 'Works Everywhere',
-            description: 'Compatible with all devices and browsers - no software installation needed.',
+            title: 'Mobile Friendly',
+            description: 'Works perfectly on all devices - desktop, tablet, and mobile.',
           },
           {
             icon: 'Image',
@@ -269,6 +287,8 @@ const JpgPngConverter = () => {
       {/* FAQ Section */}
       <div id="faq">
         <FAQ 
+          title="Frequently Asked Questions"
+          subtitle="Everything you need to know about JPG/PNG conversion"
           faqs={[
             {
               question: 'When should I convert JPG to PNG?',
@@ -297,7 +317,8 @@ const JpgPngConverter = () => {
           ]}
         />
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 };
 
