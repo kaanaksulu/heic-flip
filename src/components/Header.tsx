@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Image, ArrowRightLeft } from 'lucide-react';
+import { Image, ArrowRightLeft, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -9,6 +9,7 @@ const Header = () => {
   const navItems = [
     { path: '/', label: 'HEIC Converter', icon: Image },
     { path: '/jpg-png-converter', label: 'JPG/PNG Converter', icon: ArrowRightLeft },
+    { path: '/webp-converter', label: 'WebP Converter', icon: Layers },
   ];
 
   return (
