@@ -20,11 +20,21 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Features</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>Batch Conversion</li>
-              <li>Quality Control</li>
-              <li>Privacy First</li>
-              <li>Mobile Friendly</li>
-              <li>No File Limits</li>
+              <li>
+                <a href="/" className="hover:text-primary transition-colors">
+                  HEIC Converter
+                </a>
+              </li>
+              <li>
+                <a href="/jpg-png-converter" className="hover:text-primary transition-colors">
+                  JPG/PNG Converter
+                </a>
+              </li>
+              <li>
+                <a href="/webp-converter" className="hover:text-primary transition-colors">
+                  WebP Converter
+                </a>
+              </li>
             </ul>
           </div>
           
@@ -42,12 +52,12 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/privacy-policy" className="hover:text-primary transition-colors">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-primary transition-colors">
+                <a href="/terms-of-service" className="hover:text-primary transition-colors">
                   Terms of Service
                 </a>
               </li>

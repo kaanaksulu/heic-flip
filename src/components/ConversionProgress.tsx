@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Download, AlertCircle } from 'lucide-react';
+import { CheckCircle, Download, AlertCircle, FileCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatFileSize } from '@/utils/fileValidation';
 
@@ -54,8 +54,13 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
       {convertedFiles.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Converted Files</span>
-            {convertedFiles.length > 1 && (
+            <div className="flex items-center gap-2">
+              <FileCheck className="h-5 w-5 text-green-500" />
+              <span className="font-medium">
+                Converted Files ({convertedFiles.filter(f => !f.error).length}/{convertedFiles.length})
+              </span>
+            </div>
+            {convertedFiles.filter(f => !f.error).length > 1 && (
               <Button onClick={onDownloadAll} size="sm">
                 <Download className="h-4 w-4 mr-2" />
                 Download All
@@ -65,7 +70,7 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
           
           <div className="space-y-2">
             {convertedFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+              <div key={index} className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg border">
                 <div className="flex items-center gap-3">
                   {file.error ? (
                     <AlertCircle className="h-5 w-5 text-destructive" />
@@ -75,10 +80,10 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
                   <div>
                     <p className="font-medium">{file.originalName}</p>
                     {file.error ? (
-                      <p className="text-sm text-destructive">{file.error}</p>
+                      <p className="text-sm text-destructive font-medium">{file.error}</p>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        {formatFileSize(file.convertedBlob.size)}
+                        Size: {formatFileSize(file.convertedBlob.size)} • Ready to download
                       </p>
                     )}
                   </div>
@@ -87,7 +92,7 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
                   <Button
                     onClick={() => onDownload(file)}
                     size="sm"
-                    variant="outline"
+                    className="bg-primary hover:bg-primary/90"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download
