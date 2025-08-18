@@ -99,6 +99,7 @@ const WebPConverter = () => {
           originalName,
           convertedBlob,
           downloadUrl,
+          originalFile: file,
         });
 
         toast.success(`Converted ${file.name}`);
@@ -109,6 +110,7 @@ const WebPConverter = () => {
           convertedBlob: new Blob(),
           downloadUrl: '',
           error: 'Failed to convert file',
+          originalFile: file,
         });
         toast.error(`Failed to convert ${file.name}`);
       }

@@ -93,6 +93,7 @@ const JpgPngConverter = () => {
           originalName,
           convertedBlob,
           downloadUrl,
+          originalFile: file,
         });
 
         toast.success(`Converted ${file.name}`);
@@ -103,6 +104,7 @@ const JpgPngConverter = () => {
           convertedBlob: new Blob(),
           downloadUrl: '',
           error: 'Failed to convert file',
+          originalFile: file,
         });
         toast.error(`Failed to convert ${file.name}`);
       }

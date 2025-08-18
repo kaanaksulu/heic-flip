@@ -4,6 +4,7 @@ import { Upload, FileImage, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatFileSize } from '@/utils/fileValidation';
+import { ImagePreview } from '@/components/ImagePreview';
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
@@ -94,26 +95,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {selectedFiles.length > 0 && (
         <div className="space-y-2">
           <h4 className="font-medium">Selected Files:</h4>
-          {selectedFiles.map((file, index) => (
-            <Card key={index} className="p-3 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FileImage className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatFileSize(file.size)}
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onRemoveFile(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </Card>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedFiles.map((file, index) => (
+              <ImagePreview
+                key={index}
+                file={file}
+                onRemove={() => onRemoveFile(index)}
+                showRemoveButton={true}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

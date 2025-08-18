@@ -92,6 +92,7 @@ const Index = () => {
           originalName,
           convertedBlob,
           downloadUrl,
+          originalFile: file,
         });
 
         toast.success(`Converted ${file.name}`);
@@ -102,6 +103,7 @@ const Index = () => {
           convertedBlob: new Blob(),
           downloadUrl: '',
           error: 'Failed to convert file',
+          originalFile: file,
         });
         toast.error(`Failed to convert ${file.name}`);
       }
