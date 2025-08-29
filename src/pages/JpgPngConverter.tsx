@@ -10,12 +10,14 @@ import AdBanner from '@/components/AdBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import JSZip from 'jszip';
 
 interface ConvertedFile {
   originalName: string;
   convertedBlob: Blob;
   downloadUrl: string;
   error?: string;
+  originalFile?: File;
 }
 
 const JpgPngConverter = () => {
@@ -162,12 +164,51 @@ const JpgPngConverter = () => {
     document.body.removeChild(link);
   };
 
-  const handleDownloadAll = () => {
-    convertedFiles.forEach(file => {
-      if (!file.error) {
-        handleDownload(file);
-      }
-    });
+  const handleDownloadAll = async () => {
+    const successfulFiles = convertedFiles.filter(file => !file.error);
+
+    if (successfulFiles.length === 0) {
+      toast.error('No successful conversions to download');
+      return;
+    }
+
+    if (successfulFiles.length === 1) {
+      handleDownload(successfulFiles[0]);
+      return;
+    }
+
+    try {
+      toast.info('Creating zip file...');
+
+      const zip = new JSZip();
+
+      successfulFiles.forEach((file) => {
+        zip.file(file.originalName, file.convertedBlob);
+      });
+
+      const zipBlob = await zip.generateAsync({
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 },
+      });
+
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = zipUrl;
+      const ext = outputFormat === 'jpeg' ? 'JPG' : 'PNG';
+      link.download = `converted-${ext}-${successfulFiles.length}-files-${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setTimeout(() => URL.revokeObjectURL(zipUrl), 1000);
+
+      toast.success(`Downloaded ${successfulFiles.length} files as zip`);
+    } catch (error) {
+      console.error('Zip creation error:', error);
+      toast.error('Failed to create zip file. Downloading files individually...');
+      successfulFiles.forEach(handleDownload);
+    }
   };
 
   return (

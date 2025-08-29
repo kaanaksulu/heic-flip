@@ -10,6 +10,7 @@ import AdBanner from '@/components/AdBanner';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import heic2any from 'heic2any';
+import JSZip from 'jszip';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { validateFiles } from '@/utils/fileValidation';
 
@@ -18,6 +19,7 @@ interface ConvertedFile {
   convertedBlob: Blob;
   downloadUrl: string;
   error?: string;
+  originalFile?: File;
 }
 
 const Index = () => {
@@ -126,12 +128,61 @@ const Index = () => {
     document.body.removeChild(link);
   };
 
-  const handleDownloadAll = () => {
-    convertedFiles.forEach(file => {
-      if (!file.error) {
+  const handleDownloadAll = async () => {
+    const successfulFiles = convertedFiles.filter(file => !file.error);
+    
+    if (successfulFiles.length === 0) {
+      toast.error('No successful conversions to download');
+      return;
+    }
+
+    if (successfulFiles.length === 1) {
+      // Single file - download directly
+      handleDownload(successfulFiles[0]);
+      return;
+    }
+
+    // Multiple files - create and download zip
+    try {
+      toast.info('Creating zip file...');
+      
+      const zip = new JSZip();
+      
+      // Add each converted file to the zip
+      successfulFiles.forEach((file, index) => {
+        const fileName = file.originalName;
+        zip.file(fileName, file.convertedBlob);
+      });
+
+      // Generate zip file
+      const zipBlob = await zip.generateAsync({ 
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
+
+      // Create download link for zip
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = zipUrl;
+      link.download = `heic-converted-${outputFormat.toUpperCase()}-${successfulFiles.length}-files-${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the zip URL
+      setTimeout(() => URL.revokeObjectURL(zipUrl), 1000);
+
+      toast.success(`Downloaded ${successfulFiles.length} files as zip`);
+    } catch (error) {
+      console.error('Zip creation error:', error);
+      toast.error('Failed to create zip file. Downloading files individually...');
+      
+      // Fallback to individual downloads
+      successfulFiles.forEach(file => {
         handleDownload(file);
-      }
-    });
+      });
+    }
   };
 
   return (

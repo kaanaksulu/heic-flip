@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Download, AlertCircle, FileCheck } from 'lucide-react';
+import { CheckCircle, Download, AlertCircle, FileCheck, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatFileSize } from '@/utils/fileValidation';
 import { ImagePreview } from '@/components/ImagePreview';
@@ -63,9 +63,13 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
               </span>
             </div>
             {convertedFiles.filter(f => !f.error).length > 1 && (
-              <Button onClick={onDownloadAll} size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download All
+              <Button 
+                onClick={onDownloadAll} 
+                size="sm"
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Archive className="h-4 w-4 mr-2" />
+                Download All as ZIP
               </Button>
             )}
           </div>
