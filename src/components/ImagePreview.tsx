@@ -99,7 +99,9 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowOriginal(!showOriginal)}
-                className="h-8 px-2"
+                className="h-8 px-3 rounded-full"
+                aria-label={showOriginal ? 'Show converted preview' : 'Show original preview'}
+                title={showOriginal ? 'Show Converted' : 'Show Original'}
               >
                 {showOriginal ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 <span className="ml-1 text-xs">
@@ -110,7 +112,9 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
                 <Button
                   onClick={onDownload}
                   size="sm"
-                  className="h-8 px-2"
+                  className="h-8 px-3 rounded-full shadow-sm bg-primary hover:bg-primary/90"
+                  aria-label="Download converted file"
+                  title="Download"
                 >
                   <Download className="h-4 w-4 mr-1" />
                   Download

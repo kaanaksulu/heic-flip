@@ -63,10 +63,12 @@ export const ConversionProgress: React.FC<ConversionProgressProps> = ({
               </span>
             </div>
             {convertedFiles.filter(f => !f.error).length > 1 && (
-              <Button 
-                onClick={onDownloadAll} 
-                size="sm"
-                className="bg-primary hover:bg-primary/90"
+              <Button
+                onClick={onDownloadAll}
+                size="default"
+                className="bg-primary hover:bg-primary/90 rounded-full shadow-sm px-5"
+                aria-label="Download all converted files as a ZIP archive"
+                title="Download all converted files as ZIP"
               >
                 <Archive className="h-4 w-4 mr-2" />
                 Download All as ZIP
